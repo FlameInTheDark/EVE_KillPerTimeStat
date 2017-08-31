@@ -51,9 +51,9 @@ namespace EVE_KillTimeStat
             LogTextBox.Text += requestText;
         }
 
-        private void dateTimePicker1_Leave(object sender, EventArgs e)
+        private void startKillDatePicker_ValueChanged(object sender, EventArgs e)
         {
-            LogTextBox.Text += dateTimePicker1.Value.ToString("yyyyMMddHHss");
+            LogTextBox.Text += "Picked time string: " + startKillDatePicker.Value.ToString("yyyy-MM-dd HH:ss") + "\n\n";
         }
     }
 }

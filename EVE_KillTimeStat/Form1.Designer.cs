@@ -64,7 +64,7 @@
             this.searchBox = new System.Windows.Forms.ComboBox();
             this.findTypeLabel = new System.Windows.Forms.Label();
             this.findTypeLabelText = new System.Windows.Forms.Label();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.startKillDatePicker = new System.Windows.Forms.DateTimePicker();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -162,9 +162,10 @@
             // 
             // LogTextBox
             // 
+            this.LogTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.LogTextBox.Location = new System.Drawing.Point(0, 0);
             this.LogTextBox.Name = "LogTextBox";
-            this.LogTextBox.Size = new System.Drawing.Size(830, 350);
+            this.LogTextBox.Size = new System.Drawing.Size(830, 340);
             this.LogTextBox.TabIndex = 6;
             this.LogTextBox.Text = "";
             // 
@@ -195,13 +196,13 @@
             this.findTypeLabelText.TabIndex = 9;
             this.findTypeLabelText.Text = "####";
             // 
-            // dateTimePicker1
+            // startKillDatePicker
             // 
-            this.dateTimePicker1.Location = new System.Drawing.Point(631, 11);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(200, 20);
-            this.dateTimePicker1.TabIndex = 11;
-            this.dateTimePicker1.Leave += new System.EventHandler(this.dateTimePicker1_Leave);
+            this.startKillDatePicker.Location = new System.Drawing.Point(631, 11);
+            this.startKillDatePicker.Name = "startKillDatePicker";
+            this.startKillDatePicker.Size = new System.Drawing.Size(200, 20);
+            this.startKillDatePicker.TabIndex = 11;
+            this.startKillDatePicker.ValueChanged += new System.EventHandler(this.startKillDatePicker_ValueChanged);
             // 
             // tabControl1
             // 
@@ -259,7 +260,7 @@
             this.Controls.Add(this.chartStatus);
             this.Controls.Add(this.chartProgressBar);
             this.Controls.Add(this.tabControl1);
-            this.Controls.Add(this.dateTimePicker1);
+            this.Controls.Add(this.startKillDatePicker);
             this.Controls.Add(this.findTypeLabelText);
             this.Controls.Add(this.findTypeLabel);
             this.Controls.Add(this.searchBox);
@@ -289,7 +290,7 @@
         private System.Windows.Forms.ComboBox searchBox;
         private System.Windows.Forms.Label findTypeLabel;
         private System.Windows.Forms.Label findTypeLabelText;
-        private System.Windows.Forms.DateTimePicker dateTimePicker1;
+        private System.Windows.Forms.DateTimePicker startKillDatePicker;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;

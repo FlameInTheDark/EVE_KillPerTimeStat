@@ -25,13 +25,13 @@ namespace EVE_KillTimeStat
                     uri = @"https://zkillboard.com/autocomplete/" + request + @"/";
                     break;
                 case "character":
-                    uri = @"https://zkillboard.com/api/kills/characterID/" + request + "/startTime/" + dateTimePicker1.Value.ToString("yyyyMMdd") + "0000/no-attackers/no-items/";
+                    uri = @"https://zkillboard.com/api/kills/characterID/" + request + "/startTime/" + startKillDatePicker.Value.ToString("yyyyMMdd") + "0000/no-attackers/no-items/";
                     break;
                 case "system":
-                    uri = @"https://zkillboard.com/api/kills/solarSystemID/" + request + "/startTime/" + dateTimePicker1.Value.ToString("yyyyMMdd") + "0000/no-attackers/no-items/";
+                    uri = @"https://zkillboard.com/api/kills/solarSystemID/" + request + "/startTime/" + startKillDatePicker.Value.ToString("yyyyMMdd") + "0000/no-attackers/no-items/";
                     break;
                 case "corporation":
-                    uri = @"https://zkillboard.com/api/kills/corporationID/" + request + "/startTime/" + dateTimePicker1.Value.ToString("yyyyMMdd") + "0000/no-attackers/no-items/";
+                    uri = @"https://zkillboard.com/api/kills/corporationID/" + request + "/startTime/" + startKillDatePicker.Value.ToString("yyyyMMdd") + "0000/no-attackers/no-items/";
                     break;
             }
             string response;
@@ -46,7 +46,14 @@ namespace EVE_KillTimeStat
             }
             catch (Exception ex)
             {
-                LogTextBox.Text += ex.ToString();
+                if (InvokeRequired)
+                {
+                    Invoke(new Action(() => { LogTextBox.Text += ex.ToString() + "\n\n"; }));
+                }
+                else
+                {
+                    LogTextBox.Text += ex.ToString() + "\n\n";
+                }
                 return "[]";
             }
 
@@ -54,7 +61,7 @@ namespace EVE_KillTimeStat
         }
 
         // Функция построения графика
-        // TODO: Добавить выборку за определенное время
+        // TODO: Добавить выборку за несколько дней
         public void Chart()
         {
             Invoke(new Action(() =>
@@ -71,7 +78,7 @@ namespace EVE_KillTimeStat
             {
                 chartStatus.Text = "Сериализация";
                 chartProgressBar.Value = 40;
-                LogTextBox.Text = objectRequestText;
+                LogTextBox.Text += objectRequestText + "\n\n";
             }));
 
             string requestText;
@@ -143,7 +150,7 @@ namespace EVE_KillTimeStat
             {
                 Invoke(new Action(() =>
                 {
-                    LogTextBox.Text += ex.Message;
+                    LogTextBox.Text += ex.Message + "\n\n"; ;
                     chartProgressBar.Value = 100;
                     chartStatus.Text = "График не был построен";
                 }));
