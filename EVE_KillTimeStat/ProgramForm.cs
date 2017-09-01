@@ -16,9 +16,9 @@ using System.Xml.Serialization;
 
 namespace EVE_KillTimeStat
 {
-    public partial class Form1 : Form
+    public partial class ProgramForm : Form
     {
-        public Form1()
+        public ProgramForm()
         {
             InitializeComponent();
         }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace EVE_KillTimeStat
 {
-    partial class Form1
+    partial class ProgramForm
     {
         Thread chartThread;
 
@@ -81,8 +81,6 @@ namespace EVE_KillTimeStat
                 LogTextBox.Text += objectRequestText + "\n\n";
             }));
 
-            string requestText;
-
             try
             {
                 SearchObjects objectsSearch = JsonConvert.DeserializeObject<SearchObjects>(objectRequestText);
@@ -93,7 +91,7 @@ namespace EVE_KillTimeStat
                     findTypeLabelText.Text = objectsSearch.FoundObjects[0].type.ToString();
                 }));
 
-                requestText = RequestJSON(objectsSearch.FoundObjects[0].type, objectsSearch.FoundObjects[0].id.ToString());
+                string requestText = RequestJSON(objectsSearch.FoundObjects[0].type, objectsSearch.FoundObjects[0].id.ToString());
 
                 if (requestText == "[]")
                 {
