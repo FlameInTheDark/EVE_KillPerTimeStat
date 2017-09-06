@@ -79,11 +79,11 @@
             // playerNameFindLabel
             // 
             this.playerNameFindLabel.AutoSize = true;
-            this.playerNameFindLabel.Location = new System.Drawing.Point(12, 15);
+            this.playerNameFindLabel.Location = new System.Drawing.Point(12, 13);
             this.playerNameFindLabel.Name = "playerNameFindLabel";
-            this.playerNameFindLabel.Size = new System.Drawing.Size(84, 13);
+            this.playerNameFindLabel.Size = new System.Drawing.Size(87, 13);
             this.playerNameFindLabel.TabIndex = 1;
-            this.playerNameFindLabel.Text = "Поиск объекта";
+            this.playerNameFindLabel.Text = "Поиск объекта:";
             // 
             // playerFindButton
             // 

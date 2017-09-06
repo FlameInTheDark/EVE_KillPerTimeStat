@@ -47,6 +47,7 @@ namespace EVE_KillTimeStat
                 }
                 catch (Exception ex)
                 {
+                    LogTextBox.Text += ex.ToString() + "\n\n";
                     return "[]";
                 }
 
@@ -60,7 +61,7 @@ namespace EVE_KillTimeStat
             chartStatus.Text = "Получение данных";
             chartProgressBar.Value = 10;
 
-            string objectRequestText = await RequestJsonAsyncTask("autocomplete", searchBox.Text);
+            var objectRequestText = await RequestJsonAsyncTask("autocomplete", searchBox.Text);
             objectRequestText = objectRequestText.Insert(0, "{\"FoundObjects\":");
             objectRequestText = objectRequestText + "}";
 
@@ -70,12 +71,12 @@ namespace EVE_KillTimeStat
 
             try
             {
-                SearchObjects objectsSearch = JsonConvert.DeserializeObject<SearchObjects>(objectRequestText);
+                var objectsSearch = JsonConvert.DeserializeObject<SearchObjects>(objectRequestText);
 
                 findIDLabelText.Text = objectsSearch.FoundObjects[0].id.ToString();
                 findTypeLabelText.Text = objectsSearch.FoundObjects[0].type.ToString();
 
-                string requestText = await RequestJsonAsyncTask(objectsSearch.FoundObjects[0].type, objectsSearch.FoundObjects[0].id.ToString());
+                var requestText = await RequestJsonAsyncTask(objectsSearch.FoundObjects[0].type, objectsSearch.FoundObjects[0].id.ToString());
 
                 if (requestText == "[]")
                 {
@@ -93,7 +94,7 @@ namespace EVE_KillTimeStat
                 requestText = requestText.Insert(0, "{\"Kills\":");
                 requestText = requestText + "}";
 
-                PlayerKills allKills = JsonConvert.DeserializeObject<PlayerKills>(requestText);
+                var allKills = JsonConvert.DeserializeObject<PlayerKills>(requestText);
 
                 chartProgressBar.Value = 85;
                 chartStatus.Text = "Построение графика";
@@ -104,7 +105,7 @@ namespace EVE_KillTimeStat
                     int counter = 1;
                     foreach (var onekill in allKills.Kills)
                     {
-                        DateTime dateTime = DateTime.ParseExact(onekill.killTime, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                        var dateTime = DateTime.ParseExact(onekill.killTime, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                         counter++;
                         if (i == dateTime.Hour)
                         {

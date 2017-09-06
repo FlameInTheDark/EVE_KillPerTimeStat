@@ -31,13 +31,12 @@ namespace EVE_KillTimeStat
 
         private async void searchBox_DropDown(object sender, EventArgs e) // Выподающее меню
         {
-            
-            string requestText = await RequestJsonAsyncTask("autocomplete", searchBox.Text);
+            var requestText = await RequestJsonAsyncTask("autocomplete", searchBox.Text);
             try
             {
                 requestText = requestText.Insert(0, "{\"FoundObjects\":");
                 requestText = requestText + "}";
-                SearchObjects objectsSearch = JsonConvert.DeserializeObject<SearchObjects>(requestText);
+                var objectsSearch = JsonConvert.DeserializeObject<SearchObjects>(requestText);
                 searchBox.Items.Clear();
                 foreach (var oneObject in objectsSearch.FoundObjects)
                 {
@@ -63,6 +62,5 @@ namespace EVE_KillTimeStat
                 searchBox.DroppedDown = true;
             }
         }
-
     }
 }
