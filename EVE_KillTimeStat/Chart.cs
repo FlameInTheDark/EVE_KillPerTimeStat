@@ -12,13 +12,12 @@ namespace EVE_KillTimeStat
 {
     partial class ProgramForm
     {
-        Thread chartThread;
-
         // Функция получения информации от сервера
-        public string RequestJSON(string type, string request)
+        public async Task<string> RequestJsonAsyncTask(string type, string request)
         {
             string uri = "";
 
+            // Определяем тип запроса
             switch (type)
             {
                 case "autocomplete":
@@ -35,77 +34,59 @@ namespace EVE_KillTimeStat
                     break;
             }
             string response;
-            try
+            return await Task.Run(() =>
             {
-                using (var webClient = new WebClient())
+                try
                 {
-                    webClient.Headers["User-Agent"] = "EVE_KillTimeStat";
-                    // Выполняем запрос по адресу и получаем ответ в виде строки
-                    response = webClient.DownloadString(uri);
+                    using (var webClient = new WebClient())
+                    {
+                        webClient.Headers["User-Agent"] = "EVE_KillTimeStat";
+                        // Выполняем запрос по адресу и получаем ответ в виде строки
+                        response = webClient.DownloadString(uri);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                if (InvokeRequired)
+                catch (Exception ex)
                 {
-                    Invoke(new Action(() => { LogTextBox.Text += ex.ToString() + "\n\n"; }));
+                    return "[]";
                 }
-                else
-                {
-                    LogTextBox.Text += ex.ToString() + "\n\n";
-                }
-                return "[]";
-            }
 
-            return response;
+                return response;
+            });
         }
-
         // Функция построения графика
         // TODO: Добавить выборку за несколько дней
-        public void Chart()
+        public async Task ChartAsync()
         {
-            Invoke(new Action(() =>
-            {
-                chartStatus.Text = "Получение данных";
-                chartProgressBar.Value = 10;
-            }));
+            chartStatus.Text = "Получение данных";
+            chartProgressBar.Value = 10;
 
-            string objectRequestText = RequestJSON("autocomplete", (string)searchBox.Invoke(new Func<string>(() => searchBox.Text)));
+            string objectRequestText = await RequestJsonAsyncTask("autocomplete", searchBox.Text);
             objectRequestText = objectRequestText.Insert(0, "{\"FoundObjects\":");
             objectRequestText = objectRequestText + "}";
 
-            Invoke(new Action(() =>
-            {
-                chartStatus.Text = "Сериализация";
-                chartProgressBar.Value = 40;
-                LogTextBox.Text += objectRequestText + "\n\n";
-            }));
+            chartStatus.Text = "Сериализация";
+            chartProgressBar.Value = 40;
+            LogTextBox.Text += objectRequestText + "\n\n";
 
             try
             {
                 SearchObjects objectsSearch = JsonConvert.DeserializeObject<SearchObjects>(objectRequestText);
 
-                Invoke(new Action(() =>
-                {
-                    findIDLabelText.Text = objectsSearch.FoundObjects[0].id.ToString();
-                    findTypeLabelText.Text = objectsSearch.FoundObjects[0].type.ToString();
-                }));
+                findIDLabelText.Text = objectsSearch.FoundObjects[0].id.ToString();
+                findTypeLabelText.Text = objectsSearch.FoundObjects[0].type.ToString();
 
-                string requestText = RequestJSON(objectsSearch.FoundObjects[0].type, objectsSearch.FoundObjects[0].id.ToString());
+                string requestText = await RequestJsonAsyncTask(objectsSearch.FoundObjects[0].type, objectsSearch.FoundObjects[0].id.ToString());
 
                 if (requestText == "[]")
                 {
-                    Invoke(new Action(() =>
+                    killChart.Series["Kills"].Points.Clear();
+                    for (int i = 1; i <= 24; i++)
                     {
-                        killChart.Series["Kills"].Points.Clear();
-                        for (int i = 1; i <= 24; i++)
-                        {
-                            this.killChart.Series["Kills"].Points.AddXY(i.ToString(), 0);
-                        }
-                        chartProgressBar.Value = 100;
-                        chartStatus.Text = "Готово";
-                        chartProgressBar.Value = 0;
-                    }));
+                        this.killChart.Series["Kills"].Points.AddXY(i.ToString(), 0);
+                    }
+                    chartProgressBar.Value = 100;
+                    chartStatus.Text = "Готово";
+                    chartProgressBar.Value = 0;
                     return;
                 }
 
@@ -114,53 +95,36 @@ namespace EVE_KillTimeStat
 
                 PlayerKills allKills = JsonConvert.DeserializeObject<PlayerKills>(requestText);
 
-                Invoke(new Action(() =>
+                chartProgressBar.Value = 85;
+                chartStatus.Text = "Построение графика";
+                killChart.Series["Kills"].Points.Clear();
+                for (int i = 1; i <= 24; i++)
                 {
-                    chartProgressBar.Value = 85;
-                    chartStatus.Text = "Построение графика";
-                    killChart.Series["Kills"].Points.Clear();
-                    for (int i = 1; i <= 24; i++)
+                    int countKills = 0;
+                    int counter = 1;
+                    foreach (var onekill in allKills.Kills)
                     {
-                        int countKills = 0;
-                        int counter = 1;
-                        foreach (var onekill in allKills.Kills)
+                        DateTime dateTime = DateTime.ParseExact(onekill.killTime, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                        counter++;
+                        if (i == dateTime.Hour)
                         {
-                            DateTime dateTime = DateTime.ParseExact(onekill.killTime, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-                            counter++;
-                            if (i == dateTime.Hour)
-                            {
-                                countKills++;
-                            }
+                            countKills++;
                         }
-                        this.killChart.Series["Kills"].Points.AddXY(i.ToString(), countKills);
                     }
-                    chartProgressBar.Value = 90;
-                }));
+                    this.killChart.Series["Kills"].Points.AddXY(i.ToString(), countKills);
+                }
+                chartProgressBar.Value = 90;
 
-                Invoke(new Action(() =>
-                {
-                    chartProgressBar.Value = 100;
-                    chartStatus.Text = "Готово";
-                    chartProgressBar.Value = 0;
-                }));
+                chartProgressBar.Value = 100;
+                chartStatus.Text = "Готово";
+                chartProgressBar.Value = 0;
             }
             catch (Exception ex)
             {
-                Invoke(new Action(() =>
-                {
-                    LogTextBox.Text += ex.Message + "\n\n"; ;
-                    chartProgressBar.Value = 100;
-                    chartStatus.Text = "График не был построен";
-                }));
+                LogTextBox.Text += ex.Message + "\n\n"; ;
+                chartProgressBar.Value = 100;
+                chartStatus.Text = "График не был построен";
             }
         }
-
-        // Функция запуска потока графика
-        public void StartChart()
-        {
-            chartThread = new Thread(Chart);
-            chartThread.Start();
-        }
-
     }
 }

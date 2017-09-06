@@ -23,16 +23,16 @@ namespace EVE_KillTimeStat
             InitializeComponent();
         }
 
-        private void playerFindButton_Click(object sender, EventArgs e) // Нажатие поиска
+        private async void playerFindButton_Click(object sender, EventArgs e) // Нажатие поиска
         {
             chartProgressBar.Value = 0;
-            StartChart();
+            await ChartAsync();
         }
 
-        private void searchBox_DropDown(object sender, EventArgs e) // Выподающее меню
+        private async void searchBox_DropDown(object sender, EventArgs e) // Выподающее меню
         {
-
-            string requestText = RequestJSON("autocomplete", searchBox.Text);
+            
+            string requestText = await RequestJsonAsyncTask("autocomplete", searchBox.Text);
             try
             {
                 requestText = requestText.Insert(0, "{\"FoundObjects\":");
@@ -55,5 +55,14 @@ namespace EVE_KillTimeStat
         {
             LogTextBox.Text += "Picked time string: " + startKillDatePicker.Value.ToString("yyyy-MM-dd HH:ss") + "\n\n";
         }
+
+        private void searchBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                searchBox.DroppedDown = true;
+            }
+        }
+
     }
 }
